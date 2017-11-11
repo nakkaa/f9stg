@@ -1,0 +1,349 @@
+/*  
+【名称】F9サイトタイトル取得
+【Version】Version 1.01 (2014/09/15)
+【Webサイト】http://7ka.org
+【著作権表記】Copyright (C) 2014 としつーる
+
+クリップボードのURLを、「<a href="URL" >URLのサイトのタイトル</a>」という形に変換します。
+
+Version 1.01 (2014/09/15)
+-多重起動の禁止
+-リンク先のURLを変更。
+
+Version 1.0 (2014/09/08)
+-初版
+*/
+
+//変数
+Hotkey=「F9」
+ExitHotkey=「Shift+F9」
+//定数
+VERSION=「1.01」
+MY_URL=「http://7ka.org/software/f9stg/」
+URL=「」
+TITLE=「」
+ミューキーワード＝「F9サイトタイトル取得」。//このキーワードが被ったら多重起動となります。
+
+//ファイルのパス
+設定ファイルパス=母艦パス&「f9webtitle_config.ini」
+スタートアップリンクパス=スタートアップ&「\f10_ggr.lnk」
+
+//エラー回避
+もし、コマンドライン\1が「-debug::*」にワイルドカード一致ならば、
+　コマンドライン\1は空。
+エラーダイアログ表示許可は0
+
+
+//設定ファイルが存在すれば読み込む
+もし、設定ファイルパスが存在ならば、
+　設定ハンドル=設定ファイルパスのINI開く
+　設定ハンドルで「設定」の「Shift+F9で終了」をINI読んでSFEXIT_FLAGに代入
+　設定ハンドルで「設定」の「HotKey_1」をINI読んでKEY_ON_Aへ代入
+　設定ハンドルで「設定」の「HotKey_2」をINI読んでKEY_ON_Bへ代入
+　設定ハンドルで「設定」の「HotKey_3」をINI読んでKEY_ON_Cへ代入
+　設定ハンドルで「設定」の「出力形式」をINI読んでOUTPUT_MODEへ代入
+　設定ハンドルで「設定」の「出力テキスト」をINI読んでOUTPUT_TEXTへ代入
+　設定ハンドルのINI閉じる
+違えば、初期化処理
+もし、(KEY_ON_A=「」)OR(KEY_ON_B=「」)OR(KEY_ON_C=「」)ならば、
+　初期化処理
+
+●初期化処理
+　KEY_ON_A=6//ホットキー
+　KEY_ON_B=0
+　KEY_ON_C=0
+　OUTPUT_MODE=0//検索エンジン
+　SFEXIT_FLAG=1//ShiftF9で終了するフラグ
+　OUTPUT_MODE=0//出力形式
+　OUTPUT_TEXT=『<a href="{URL}">{TITLE}</a>』
+
+●母艦設計
+　母艦の可視はオフ
+　母艦のタイトルは「F9サイトタイトル取得」
+　母艦をタスクトレイ入れる
+　文字書体は「Meiryo UI|10」
+　
+設定Fとはフォーム
+これについて
+　背景色はウィンドウ背景色
+　タイトルは「F9サイトタイトル取得 設定」
+　スタイルは「ダイアログスタイル」
+　H=400
+　W=450
+
+　
+設定Bとはチェック
+これについて
+　親部品は設定F
+　X=20
+　Y=20
+　W=230
+　テキストは「Shift+F9で終了する」
+　値はSFEXIT_FLAG
+　クリックした時は～
+　　SFEXIT_FLAG=設定Bの値
+
+キーラベルとはラベル
+これについて
+　親部品は設定F
+　X=20
+　Y=50
+　テキストは「ホットキー：」
+
+キー登録Aとはコンボ
+これについて
+　親部品は設定F
+　編集はオフ
+　アイテムは「Ctrl+{~}F2{~}F3{~}F4{~}F6{~}F8{~}F9{~}F10」
+　値はKEY_ON_A
+　X=100
+　Y=50
+　W=60
+　リスト閉じた時は～
+　　KEY_ON_A=キー登録Aの値
+　　第二キー登録処理
+　　KEY_NAME更新処理
+
+キー登録Bとはコンボ
+これについて
+　親部品は設定F
+　編集はオフ
+　アイテムは「Alt+{~}Shift+{~}1{~}2{~}3{~}4{~}5{~}6{~}7{~}8{~}9{~}0{~}A{~}B{~}C{~}D{~}E{~}F{~}G{~}H{~}I{~}J{~}K{~}L{~}M{~}N{~}O{~}P{~}Q{~}R{~}S{~}T{~}U{~}V{~}W{~}X{~}Y{~}Z」
+　値はKEY_ON_B//<=37
+　X=170
+　Y=50
+　W=70
+　リスト閉じた時は～
+　　KEY_ON_B=キー登録Bの値
+　　第三キー登録処理
+　　KEY_NAME更新処理
+　　
+キー登録Cとはコンボ
+これについて
+　親部品は設定F
+　編集はオフ
+　アイテムは「1{~}2{~}3{~}4{~}5{~}6{~}7{~}8{~}9{~}0{~}A{~}B{~}C{~}D{~}E{~}F{~}G{~}H{~}I{~}J{~}K{~}L{~}M{~}N{~}O{~}P{~}Q{~}R{~}S{~}T{~}U{~}V{~}W{~}X{~}Y{~}Z」
+　値はKEY_ON_C//<=35
+　X=250
+　Y=50
+　W=50
+　リスト閉じた時は～
+　　KEY_ON_C=キー登録Cの値
+　　KEY_NAME更新処理
+　　
+番号とはラベル
+これについて
+　親部品は設定F
+　X=20
+　Y=260
+　W=100
+　テキストは「F9サイトタイトル取得  Version {VERSION}」
+　
+リンクとはラベル
+これについて
+　親部品は設定F
+　X=20
+　Y=290
+　W=100
+　文字書体は「||下線」
+　文字色は$66cc
+　テキストは「 Copyright (C) 2014 としつーる 」
+　マウス移動した時は～
+　　(0の32649のカーソルアイコン取得)にマウスカーソル設定。
+　マウス押した時は～
+　　(0の32649のカーソルアイコン取得)にマウスカーソル設定
+　クリックした時は～
+　　「{MY_URL}」を起動
+
+出力形式設定とはラジオ
+これについて
+　親部品は設定F
+　Y=100
+　X=20
+　W=400
+　H=120
+　テキストは「出力形式」
+　アイテムは「テキスト{~}HTML{~}カスタマイズ：」
+　値はOUTPUT_MODE
+　クリックした時は～
+　　OUTPUT_MODE=出力形式設定の値
+　　出力形式編集有効処理
+
+出力形式編集とはエディタ
+これについて
+　親部品は出力形式設定
+　X=120
+　Y=90
+　W=240
+　テキストはOUTPUT_TEXT
+　変更した時は～
+　　OUTPUT_TEXT=出力形式編集のテキスト
+　
+出力形式編集有効処理
+●出力形式編集有効処理
+　　もし、OUTPUT_MODE=2ならば、
+　　　出力形式編集の有効はオン
+　　違えば、
+　　　出力形式編集の有効はオフ
+　　　
+設定終了とはボタン
+これについて
+　親部品は設定F
+　X=230
+　Y=240
+　H=50
+　W=170
+　テキストは「設定ウィンドウを閉じる」
+　クリックした時は～
+　　設定Fを閉じる
+アプリ終了とはボタン
+これについて
+　親部品は設定F
+　X=230
+　Y=300
+　H=30
+　W=170
+　テキストは「F9サイトタイトル取得の終了」
+　クリックした時は～
+　　終了処理
+
+母艦のタスクトレイクリックした時は～
+　設定Fを表示
+　設定Fを中央移動
+
+「,M親,ダミー
+M親,M子1,開く(&O),,,母艦のタスクトレイクリックした時
+M親,M線11,-
+M親,M子2,終了(&C),,,終了処理」をメニュー一括作成
+
+GetMenu(母艦ハンドル)
+メニューハンドル=GetSubMenu(それ,0)
+M親の可視はオフ
+
+母艦のタスクトレイ右クリックした時は～
+　Sとは文字列
+　Sに8を確保
+　SetForegroundWindow(母艦ハンドル)
+　GetCursorPos(S)
+　UNPACK(S,POINT,POINT_TYPE)
+　TrackPopupMenu(メニューハンドル,2,POINT.X,POINT.Y,0,母艦ハンドル,0)
+
+KEY_NAME更新処理
+
+「{ExitHotkey}」に「HTKEY終了処理」をホットキー登録
+第二キー登録処理
+第三キー登録処理
+//サブルーチン
+●KEY_NAME更新処理
+　「{Hotkey}」をホットキー解除
+　もし、KEY_ON_A!=0ならば、Hotkey=「{キー登録Aのテキスト}」
+　違えば、
+　　もし、(KEY_ON_B<=1)AND(KEY_ON_A=0)ならば、
+　　　Hotkey=「{キー登録Aのテキスト}{キー登録Bのテキスト}{キー登録Cのテキスト}」
+　　違えば、
+　　　Hotkey=「{キー登録Aのテキスト}{キー登録Bのテキスト}」
+　「{Hotkey}」に「取得処理」をホットキー登録
+●取得処理
+　もし、クリップボードが「*.*」に一致ならば、
+　　URL=クリップボード
+　　経過ダイアログはオフ
+　　エラー監視
+　　　HTTP_DATA=クリップボードからHTTPデータ取得してSJIS変換。
+　　　TITLE=(HTTP_DATAで「Title」をタグ切り出し)のタグ削除
+　　　//TITLE=TITLEの「&rsaquo;」を「>」に置換
+　　　もし、OUTPUT_MODE=0ならば、
+　　　　クリップボードはTITLE
+　　　違えば、もし、OUTPUT_MODE=1ならば、
+　　　　クリップボードは、「<a href="{URL}">{TITLE}</a>」
+　　　違えば、
+　　　　OUTPUT_TEXT_RUN=OUTPUT_TEXTの『{URL}』をURLに置換
+　　　　OUTPUT_TEXT_RUN=OUTPUT_TEXT_RUNの『{TITLE}』をTITLEに置換
+　　　　クリップボードはOUTPUT_TEXT_RUN
+　　エラーならば、
+　　　「{今日} {今}以下のエラーのため処理を完了できませんでした。{~}」&エラーメッセージを「error.txt」に追加保存
+●終了処理
+　設定ハンドル=設定ファイルパスのINI開く
+　設定ハンドルで「設定」の「Shift+F9で終了」にSFEXIT_FLAGをINI書く
+　設定ハンドルで「設定」の「HotKey_1」にKEY_ON_AをINI書く
+　設定ハンドルで「設定」の「HotKey_2」にKEY_ON_BをINI書く
+　設定ハンドルで「設定」の「HotKey_3」にKEY_ON_CをINI書く
+　設定ハンドルで「設定」の「出力形式」にOUTPUT_MODEをINI書く
+　設定ハンドルで「設定」の「出力テキスト」にOUTPUT_TEXTをINI書く
+　設定ハンドルのINI閉じる
+　ReleaseMutex(ミューテックス)。
+　CloseHandle(ミューテックス)。
+　終了
+
+●第二キー登録処理
+　もし、KEY_ON_A=0ならば、
+　　キー登録Bの有効はオン
+　　もし、KEY_ON_B<=1ならば、キー登録Cの有効はオン
+　違えば、
+　　キー登録Bの有効はオフ
+　　キー登録Cの有効はオフ
+●第三キー登録処理
+　もし、(KEY_ON_B<=1)AND(KEY_ON_A=0)ならば、
+　　キー登録Cの有効はオン
+　違えば、
+　　キー登録Cの有効はオフ
+●HTKEY終了処理
+　もし、SFEXIT_FLAG=1ならば、終了処理
+　
+//多重起動の禁止
+●CreateMutex(sec,owner,{参照渡し}neme) =DLL("kernel32.dll",
+　"HANDLE CreateMutexA(
+LONG pSAttr,//0固定
+BOOL fOwner,//所有者
+LPCTSTR sMutexName//オブジェクト名
+)")
+●ReleaseMutex(hMutex) =DLL("kernel32.dll",
+　"BOOL ReleaseMutex(
+HANDLE hMutex // ミューテックスのハンドル
+)")
+●CloseHandle(hObject)=DLL("kernel32.dll",
+　"BOOL CloseHandle(
+HANDLE hObject // オブジェクトのハンドル
+)")
+●GetLastError()=DLL("kernel32.dll","DWORD GetLastError()")
+　ミューテックスはCreateMutex(0,0,ミューキーワード)
+　GetLastError()
+　もしそれが/*ERROR_ALREADY_EXISTS*/183ならば、終わり。
+　
+　　
+●カーソルアイコン取得(ファイルの種類の) = DLL("user32.dll","DWORD LoadCursorA(BOOL,DWORD)")
+●マウスカーソル設定(Iに) = DLL("user32.dll","DWORD SetCursor(DWORD)")
+
+//タスクトレイ右クリックメニュー
+■POINT
+　・X
+　・Y
+
+!POINT_TYPEとは文字列="DWORD,DWORD"
+
+●GetCursorPos({参照渡し}p)=DLL("USER32.DLL",
+"INT GetCursorPos(
+char* pPoint)")
+
+●GetMenu(hWnd)=DLL("USER32.DLL",
+"DWORD GetMenu(DWORD hWnd)")
+
+●GetSubMenu(hMenu,I)=DLL("USER32.DLL",
+"DWORD GetSubMenu(
+DWORD hWnd,
+DWORD Index)")
+
+●TrackPopupMenu(hMenu,f,x,y,r,hWnd,p)=DLL("USER32.DLL",
+"Int TrackPopupMenu(
+Int hMenu,
+Int wFlags,
+Int x,
+Int y,
+Int nReserved,
+Int hWnd,
+Int lPrc)")
+
+●SetForegroundWindow(hWnd) =DLL("user32.dll",
+"BOOL SetForegroundWindow(
+HWND hWnd
+)")
+
